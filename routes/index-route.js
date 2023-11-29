@@ -1,7 +1,9 @@
 var express = require("express");
 var router = express.Router();
 
-const authRouters = require('./authroutes/auth-route');
+const authRouters = require('./auth/auth-route');
+
+const chatRoutes = require('./chat/chat-routes');
 
 
 router.get("/", (req, res) => {
@@ -11,8 +13,8 @@ router.get("/", (req, res) => {
     });
 });
 
-console.log('index-route');
+router.use('/',authRouters);
 
-router.use('/auth',authRouters)
+router.use('/chat',chatRoutes);
 
 module.exports = router;
