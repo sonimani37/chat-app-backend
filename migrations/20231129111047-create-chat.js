@@ -12,8 +12,23 @@ module.exports = {
       message: {
         type: Sequelize.STRING
       },
-      userId: {
-        type: Sequelize.INTEGER
+      senderId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',  // name of the table
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'  // Change the delete rule as needed
+      },
+      receiverId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',  // name of the table
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'  // Change the delete rule as needed
       },
       createdAt: {
         allowNull: false,

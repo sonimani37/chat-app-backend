@@ -4,9 +4,9 @@ var chatRoutes = express.Router();
 
 const chatController = require("../../controllers/chatController");
 
-authRouter.post("/send-message", chatController.sendMessage);
+chatRoutes.post("/send-message", chatController.sendMessage);
 
-authRouter.get("/get-message", chatController.getMessage);
+chatRoutes.post("/get-messages", chatController.getMessages);
 
 
 module.exports = chatRoutes;
