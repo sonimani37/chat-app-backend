@@ -14,22 +14,16 @@ module.exports = {
                     receiverId: req.body.receiverId,
                 }
             );
-
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
-            console.log(error);
-            return resp.status(500).json({ success: false, error: error })
+            return resp.status(500).json({ success: false, error: error.message })
         }
     },
 
     async getMessages(req, resp) {
-        console.log('req.body', req.body)
         try {
             var sender_id = JSON.parse(req.body.senderId);
             var receiver_id = JSON.parse(req.body.receiverId);
-            console.log(sender_id)
-            console.log(receiver_id)
-
             const chat = await Chat.findAll({
                 where: {
                     [Op.or]: [
@@ -46,9 +40,7 @@ module.exports = {
 
             resp.status(200).json({ success: true, messages: chat, });
         } catch (error) {
-            // return resp.send(error)
-            console.log('error', error);
-            return resp.status(500).json({ success: false, error: error })
+            return resp.status(500).json({ success: false, error: error.message })
         }
     },
 }

@@ -5,6 +5,8 @@ const authRouters = require('./auth/auth-route');
 
 const chatRoutes = require('./chat/chat-routes');
 
+const groupRoutes = require('./group/group-routes');
+
 
 router.get("/", (req, res) => {
     res.status(200).json({
@@ -16,5 +18,7 @@ router.get("/", (req, res) => {
 router.use('/',authRouters);
 
 router.use('/chat',chatRoutes);
+
+router.use('/group',groupRoutes);
 
 module.exports = router;

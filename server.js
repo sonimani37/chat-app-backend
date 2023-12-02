@@ -23,19 +23,20 @@ const io = socketIo(server, {
 });
 
 app.use(bodyParser.json());
-
 app.use('/api', routes);
 
 // Socket.IO connection event
 io.on('connection', (socket) => {
-    console.log('A user connected',socket.id);
-
     // Example: Listen for a chat message event
     socket.on('user-message', (message) => {
-        console.log('Message from client:', message);
-
         // Broadcast the message to all connected clients
         io.emit('chatMessage', message);
+    });
+
+    // Listen for group chat messages
+    socket.on('group-message', (data) => {
+        // Broadcast the message to all users in the room
+        io.emit('chatGroupMessage', data);
     });
 
     // Example: Listen for a disconnect event
@@ -43,6 +44,8 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 });
+
+
 
 server.listen(7000, (req, resp) => {
     console.log('Server is running on http://localhost:7000');
