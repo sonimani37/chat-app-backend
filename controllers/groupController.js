@@ -3,6 +3,8 @@ const { User } = require('../models');
 const { Groups } = require('../models');
 const { GroupUsers } = require('../models');
 const { GroupChat } = require('../models');
+const { GroupChatMedia } = require('../models');
+
 
 const { Op } = require('sequelize'); // Import the Op (Operator) module
 
@@ -45,17 +47,37 @@ module.exports = {
 
     async sendMessage(req, resp) {
         try {
+            console.log(req.body);
             req.body.senderId = JSON.parse(req.body.senderId);
             req.body.groupId = JSON.parse(req.body.groupId);
-            const chat = await GroupChat.create(
+            const groupChat = await GroupChat.create(
                 {
-                    message: req.body.message,
+                    message: req.body?.message,
                     groupId: req.body.groupId,
                     senderId: req.body.senderId,
+                });
+                var mediaId = groupChat.id;
+                if(req.files){
+                    req.files.forEach(async element => {
+                     var gpChat =  await GroupChatMedia.create(
+                            {
+                                groupChatId: mediaId,
+                                fileType: element.mimetype,
+                                fileName: element.filename,
+                                filePath: element.path
+                            }
+                        );
+
+                        await GroupChat.update(
+                            { message: gpChat.filePath },
+                            { where: { id: groupChat.id } },
+                        );
+                    });
                 }
-            );
+            
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
+            console.log(error);
             return resp.status(500).json({ success: false, error: error.message })
         }
     },
