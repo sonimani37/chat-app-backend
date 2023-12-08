@@ -15,6 +15,7 @@ const server = http.createServer(app); // Create an http server
 
 app.use(express.json());
 app.use(cors());
+app.use("/uploads", express.static("./uploads"));
 
 const io = socketIo(server, {
     cors: {
