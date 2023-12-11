@@ -46,6 +46,12 @@ module.exports = {
     },
 
     async sendMessage(req, resp) {
+        if (!req.body.senderId) {
+            return resp.status(400).json({ message: 'Sender ID is required' });
+        }
+        if (!req.body.groupId) {
+            return resp.status(400).json({ message: 'group ID is required' });
+        }
         try {
             console.log(req.body);
             req.body.senderId = JSON.parse(req.body.senderId);

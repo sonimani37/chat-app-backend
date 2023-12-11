@@ -6,6 +6,12 @@ const { Op } = require('sequelize'); // Import the Op (Operator) module
 
 module.exports = {
     async sendMessage(req, resp) {
+        if (!req.body.senderId) {
+            return resp.status(400).json({ message: 'Sender ID is required' });
+        }
+        if (!req.body.receiverId) {
+            return resp.status(400).json({ message: 'Receiver ID is required' });
+        }
         try {
             req.body.senderId = JSON.parse(req.body.senderId);
             req.body.receiverId = JSON.parse(req.body.receiverId);
