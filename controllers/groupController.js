@@ -1,9 +1,4 @@
-const { Chat } = require('../models');
-const { User } = require('../models');
-const { Groups } = require('../models');
-const { GroupUsers } = require('../models');
-const { GroupChat } = require('../models');
-const { GroupChatMedia } = require('../models');
+const { User,Groups,GroupUsers,GroupChat,GroupChatMedia,UserImage } = require('../models');
 
 
 const { Op } = require('sequelize'); // Import the Op (Operator) module
@@ -22,7 +17,6 @@ module.exports = {
             resp.status(500).json({ success: false, error: error.message });
         }
     },
-
 
     async getGroups(req, resp) {
         try {
@@ -91,12 +85,21 @@ module.exports = {
     async getGroupMessages(req, resp) {
         try {
             var groupId = JSON.parse(req.body.groupId);
+            
             const groupChat = await GroupChat.findAll({
                 where: { groupId },
                 include: [
-                    { model: User, as: 'sender' },
+                    // { model: User, as: 'sender' },
+                    {
+                        model: User, 
+                        as: 'sender',
+                        include: [
+                           {model: UserImage, as: 'UserImages'}
+                       ],
+                   },
                     { model: Groups, as: 'group' },
                 ],
+                order: [['createdAt', 'ASC']],
              });
 
             resp.status(200).json({ success: true, messages: groupChat, });

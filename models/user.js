@@ -1,21 +1,17 @@
 'use strict';
-const {
-    Model
-} = require('sequelize');
+const { Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
 
         static associate(models) {
+
             User.belongsToMany(models.Groups, {
                 through: models.GroupUsers,
                 onDelete: "cascade",
-                foreignKey: {
-                    name: "user_id",
-                    allowNull: false,
-                },
-                as: "group",
+                foreignKey: { name: "user_id", allowNull: false, }, as: "group",
             });
 
+            User.hasOne(models.UserImage, { foreignKey: 'userId', as: 'UserImages' });
         }
     }
     User.init({
@@ -24,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         contact: DataTypes.STRING,
         email: DataTypes.STRING,
         password: DataTypes.STRING,
+        status: {
+            type: DataTypes.STRING, // or DataTypes.BOOLEAN
+            defaultValue: 'offline',
+        },
+        otp: DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'User',

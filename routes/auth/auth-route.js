@@ -12,7 +12,16 @@ authRouter.post("/signin", authController.login);
 
 authRouter.get("/getUsers", authController.getUsers);
 
-authRouter.post("/updateProfile/:userId", authController.updateProfile);
+authRouter.post("/updateProfile/:userId",helper.upload.any(), authController.updateProfile);
+
+authRouter.get("/logout/:userId", authController.logOut);
+
+authRouter.get("/login", authController.loginWithContact);
+
+authRouter.get("/verify", authController.varifyUser);
+
+
+
 
 
 module.exports = authRouter;

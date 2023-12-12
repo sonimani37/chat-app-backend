@@ -28,6 +28,7 @@ app.use('/api', routes);
 
 // Socket.IO connection event
 io.on('connection', (socket) => {
+
     // Example: Listen for a chat message event
     socket.on('user-message', (message) => {
         // Broadcast the message to all connected clients
@@ -39,6 +40,14 @@ io.on('connection', (socket) => {
         // Broadcast the message to all users in the room
         io.emit('chatGroupMessage', data);
     });
+
+    // Listen for user status change events
+    socket.on('status-change', (data) => {
+        console.log('---data-----', data);
+    // Broadcast the status change to all connected clients
+    io.emit('userStatusChange', data);
+    });
+
 
     // Example: Listen for a disconnect event
     socket.on('disconnect', () => {
