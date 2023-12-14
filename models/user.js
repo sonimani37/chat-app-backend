@@ -24,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING, // or DataTypes.BOOLEAN
             defaultValue: 'offline',
         },
-        otp: DataTypes.INTEGER
+        otp: DataTypes.INTEGER,
+        resetToken: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'User',

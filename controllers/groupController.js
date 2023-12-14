@@ -1,21 +1,78 @@
-const { User,Groups,GroupUsers,GroupChat,GroupChatMedia,UserImage } = require('../models');
-
-
+const { User, Groups, GroupUsers, GroupChat, GroupChatMedia, UserImage } = require('../models');
 const { Op } = require('sequelize'); // Import the Op (Operator) module
 
 module.exports = {
 
     async createGroup(req, resp) {
         try {
+            let file = {}
+            if (req.files) {
+                req.files.forEach(async element => {
+                    file.fileType = element.mimetype,
+                        file.fileName = element.filename,
+                        file.filePath = element.path
+                });
+            }
             const { group_name, users } = req.body;
+
             // Create group
-            const group = await Groups.create({ group_name });
+            // const group = await Groups.create({ group_name });
+            const group = await Groups.create(
+                {
+                    group_name: group_name,
+                    fileType: file.fileType,
+                    fileName: file.fileName,
+                    filePath: file.filePath
+                }
+            );
+            const userss = req.body.users.split(',').map(userId => parseInt(userId, 10));
+
             // Add users to the group
-            await Promise.all(users.map(userId => GroupUsers.create({ group_id: group.id, user_id: userId })));
+            await Promise.all(userss.map(userId => GroupUsers.create({ group_id: group.id, user_id: userId })));
+
             resp.status(200).json({ success: true, successmessage: 'Group created successfully' });
         } catch (error) {
             resp.status(500).json({ success: false, error: error.message });
         }
+    },
+
+    async updateGroup(req, resp) {
+        try {
+
+            let groupId = req.params.groupId;
+            const groupById = await Groups.findByPk(groupId);
+            if (!groupById) {
+                throw new Error('Group not found');
+            }
+
+            // Update group_name
+            const { group_name } = req.body;
+            groupById.group_name = group_name;
+
+            // Update file
+            if (req.files && req.files.length > 0) {
+                const element = req.files[0]; // Assuming only one file is updated
+                groupById.fileType = element.mimetype;
+                groupById.fileName = element.filename;
+                groupById.filePath = element.path;
+            }
+
+            await groupById.save();
+
+            // Update group users
+            const users = req.body.users.split(',').map(userId => parseInt(userId, 10));
+
+            // Delete old group users
+            await GroupUsers.destroy({ where: { group_id: groupId } });
+
+            // Add updated users to the group
+            await Promise.all(users.map(userId => GroupUsers.create({ group_id: groupId, user_id: userId })));
+
+            resp.status(200).json({ success: true, successmessage: 'Group updated successfully' });
+        } catch (error) {
+            resp.status(500).json({ success: false, error: error.message });
+        }
+
     },
 
     async getGroups(req, resp) {
@@ -30,6 +87,7 @@ module.exports = {
                 resp.status(200).json({ success: true, group: group });
             } else {
                 const groups = await Groups.findAll(
+
                     { include: 'user', }
                 );
                 resp.status(200).json({ success: true, groups: groups });
@@ -56,25 +114,25 @@ module.exports = {
                     groupId: req.body.groupId,
                     senderId: req.body.senderId,
                 });
-                var mediaId = groupChat.id;
-                if(req.files){
-                    req.files.forEach(async element => {
-                     var gpChat =  await GroupChatMedia.create(
-                            {
-                                groupChatId: mediaId,
-                                fileType: element.mimetype,
-                                fileName: element.filename,
-                                filePath: element.path
-                            }
-                        );
+            var mediaId = groupChat.id;
+            if (req.files) {
+                req.files.forEach(async element => {
+                    var gpChat = await GroupChatMedia.create(
+                        {
+                            groupChatId: mediaId,
+                            fileType: element.mimetype,
+                            fileName: element.filename,
+                            filePath: element.path
+                        }
+                    );
 
-                        await GroupChat.update(
-                            { message: gpChat.filePath },
-                            { where: { id: groupChat.id } },
-                        );
-                    });
-                }
-            
+                    await GroupChat.update(
+                        { message: gpChat.filePath },
+                        { where: { id: groupChat.id } },
+                    );
+                });
+            }
+
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
             console.log(error);
@@ -85,22 +143,22 @@ module.exports = {
     async getGroupMessages(req, resp) {
         try {
             var groupId = JSON.parse(req.body.groupId);
-            
+
             const groupChat = await GroupChat.findAll({
                 where: { groupId },
                 include: [
                     // { model: User, as: 'sender' },
                     {
-                        model: User, 
+                        model: User,
                         as: 'sender',
                         include: [
-                           {model: UserImage, as: 'UserImages'}
-                       ],
-                   },
+                            { model: UserImage, as: 'UserImages' }
+                        ],
+                    },
                     { model: Groups, as: 'group' },
                 ],
                 order: [['createdAt', 'ASC']],
-             });
+            });
 
             resp.status(200).json({ success: true, messages: groupChat, });
         } catch (error) {

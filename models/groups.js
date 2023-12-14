@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Groups.init({
-    group_name: DataTypes.STRING
+    group_name: DataTypes.STRING,
+    fileType: DataTypes.STRING,
+    fileName: DataTypes.STRING,
+    filePath: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Groups',

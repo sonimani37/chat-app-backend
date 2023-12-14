@@ -6,7 +6,9 @@ var groupRoutes = express.Router();
 
 const groupController = require("../../controllers/groupController");
 
-groupRoutes.post("/create", groupController.createGroup);
+groupRoutes.post("/create",helper.upload.any(), groupController.createGroup);
+
+groupRoutes.post("/update/:groupId",helper.upload.any(), groupController.updateGroup);
 
 groupRoutes.get("/", groupController.getGroups);
 

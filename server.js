@@ -2,10 +2,14 @@ const http = require('http'); // Import the http module
 const express = require('express');
 const socketIo = require('socket.io');
 
+const passport = require('passport');
+const session = require('express-session');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const routes = require('./routes/index-route');
-
 
 const app = express();
 
@@ -22,6 +26,14 @@ const io = socketIo(server, {
         origin: '*',
     },
 });
+
+const crypto = require('crypto');
+// Generate a random string to use as the secret key
+const secretKey = crypto.randomBytes(32).toString('hex');
+
+app.use(session({ secret: secretKey, resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use('/api', routes);
@@ -44,18 +56,15 @@ io.on('connection', (socket) => {
     // Listen for user status change events
     socket.on('status-change', (data) => {
         console.log('---data-----', data);
-    // Broadcast the status change to all connected clients
-    io.emit('userStatusChange', data);
+        // Broadcast the status change to all connected clients
+        io.emit('userStatusChange', data);
     });
-
 
     // Example: Listen for a disconnect event
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
 });
-
-
 
 server.listen(7000, (req, resp) => {
     console.log('Server is running on http://localhost:7000');
