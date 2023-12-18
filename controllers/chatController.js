@@ -1,6 +1,7 @@
 const { Chat } = require('../models');
 const { User } = require('../models');
 const { SingleChatMedia } = require('../models');
+const sendPushNotification = require('./../pushNotifications');
 
 const { Op } = require('sequelize'); // Import the Op (Operator) module
 
@@ -34,13 +35,25 @@ module.exports = {
                             filePath: element.path
                         }
                     );
-                    
+
                     await Chat.update(
                         { message: singleChat.filePath },
                         { where: { id: chat.id } },
                     );
                 });
             }
+
+            const recipientDeviceToken = "get recipient's FCM device token from your database";
+
+            const notificationPayload = {
+                notification: {
+                    title: 'New Message',
+                    body: 'You have a new message!',
+                },
+                data: {
+                    // add any additional data you want to send with the notification
+                },
+            };
 
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {

@@ -74,7 +74,7 @@ module.exports = {
     },
 
     async login(req, resp) {
-
+        console.log(req.body)
         if (!req.body.email || !req.body.password) {
             if (!req.body.email) {
                 return resp.status(400).json({ message: 'Email is required' });
