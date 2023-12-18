@@ -43,7 +43,7 @@ module.exports = {
                 });
             }
 
-            const recipientDeviceToken = "get recipient's FCM device token from your database";
+            const recipientDeviceToken = "ceiEjNy1Qlcuaa95ULd91O:APA91bFe0VFYl_953Wusqiq-shzC7ZkwHv9V1FhL5IpDBSYOMmgygnSMeHANnf5DLBHXKvGTKOUs3hTDiW2PA31Y3sAZdNwQPwHG-tAVS7XCINLk8WSpRr4_B_sZFgCtDTJKlv0Pj0c-";
 
             const notificationPayload = {
                 notification: {
@@ -54,6 +54,8 @@ module.exports = {
                     // add any additional data you want to send with the notification
                 },
             };
+
+            sendPushNotification(recipientDeviceToken,notificationPayload)
 
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {

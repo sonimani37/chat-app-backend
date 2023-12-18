@@ -74,7 +74,6 @@ module.exports = {
     },
 
     async login(req, resp) {
-        console.log(req.body)
         if (!req.body.email || !req.body.password) {
             if (!req.body.email) {
                 return resp.status(400).json({ message: 'Email is required' });
@@ -86,17 +85,7 @@ module.exports = {
         try {
             const { email, password } = req.body;
 
-            const user = await User.findOne({
-                where: { email },
-                include: [{
-                    model: UserImage,
-                    required: true, // INNER JOIN equivalent
-                    association: 'UserImages',
-                    // on: {
-                    //   userId: Sequelize.col('Users.id') // ON ui.userId = Users.id
-                    // }
-                }]
-            });
+            const user = await User.findOne({ where: { email } });
 
             if (!user) {
                 return resp.status(401).json({ success: false, error: 'Invalid credentials' });
