@@ -43,19 +43,24 @@ module.exports = {
                 });
             }
 
-            const recipientDeviceToken = "ceiEjNy1Qlcuaa95ULd91O:APA91bFe0VFYl_953Wusqiq-shzC7ZkwHv9V1FhL5IpDBSYOMmgygnSMeHANnf5DLBHXKvGTKOUs3hTDiW2PA31Y3sAZdNwQPwHG-tAVS7XCINLk8WSpRr4_B_sZFgCtDTJKlv0Pj0c-";
-
-            const notificationPayload = {
-                notification: {
-                    title: 'New Message',
-                    body: 'You have a new message!',
-                },
-                data: {
-                    // add any additional data you want to send with the notification
-                },
-            };
-
-            sendPushNotification(recipientDeviceToken,notificationPayload)
+            // Retrieve the recipient's FCM token from the user model
+            const recipient = await User.findByPk(req.body.receiverId);
+            console.log('recipient',recipient)
+            if (recipient && recipient.fcmtoken) {
+                        const notificationPayload = {
+                            notification: {
+                                title: 'New Message',
+                                body: 'You have a new message!',
+                            },
+                            data: {
+                                // add any additional data you want to send with the notification
+                            },
+                        };
+                sendPushNotification(recipient.fcmtoken, notificationPayload);
+            } else {
+                console.log({ error: 'Recipient not found or missing FCM token' });
+            }
+            // sendPushNotification(recipient.fcmToken,notificationPayload)
 
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {

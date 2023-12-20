@@ -59,12 +59,15 @@ authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "
 authRouter.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }),authController.callBackFunction
     // (req, res) => {
     //     console.log('req', req.user);
-    //     // window.location.href = "localhost:4200";     
+    //     // window.location.href = "localhost:4200";
     //     this.dialogClose();
     //     res.send(req.user);
         // res.redirect('/api/my-profile');
     // }
 );
+
+authRouter.post("/store-fcm-token", authController.storeFcmToken);
+
 
 
 module.exports = authRouter;

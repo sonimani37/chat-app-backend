@@ -4,14 +4,13 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
 
-    await queryInterface.addColumn('Users', 'status', {
+    await queryInterface.addColumn('Users', 'fcmtoken', {
       type: Sequelize.STRING,
-      defaultValue: 'offline',
-      allowNull: false,
+        before: 'createdAt'
     });
   },
 
   async down (queryInterface, Sequelize) {
-      await queryInterface.removeColumn('Users', 'status');
+      await queryInterface.removeColumn('Users', 'fcmtoken');
   }
 };

@@ -121,6 +121,24 @@ module.exports = {
         }
     },
 
+    async storeFcmToken(req, resp) {
+        try {
+            const { userId, fcmtoken } = req.body;
+            console.log('fcmtoken',fcmtoken)
+                const user = await User.findOne({ where: { id : userId } });
+                if (!user) {
+                    return resp.status(401).json({ success: false, error: 'Invalid credentials' });
+                }
+                if (user) {
+                    await User.update({ fcmtoken: fcmtoken }, { where: { id: userId } });
+                }
+                console.log('user',user);
+                resp.status(200).json({ success: true, user: user});
+        } catch (error) {
+            console.error('errorerror.message',error.message);
+            resp.status(500).json({ success: false, error: error.message });
+        }
+    },
 
     async getUsers(req, res) {
         try {

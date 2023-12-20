@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'offline',
         },
         otp: DataTypes.INTEGER,
-        resetToken: DataTypes.STRING
+        resetToken: DataTypes.STRING,
+        fcmtoken: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'User',
