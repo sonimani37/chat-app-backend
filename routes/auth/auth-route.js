@@ -56,19 +56,7 @@ authRouter.post("/reset-password", authController.resetPassword);
 
 authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }),);
 
-authRouter.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }),authController.callBackFunction
-    // (req, res) => {
-    //     console.log('req', req.user);
-    //     // window.location.href = "localhost:4200";
-    //     this.dialogClose();
-    //     res.send(req.user);
-        // res.redirect('/api/my-profile');
-    // }
-);
-
-authRouter.post("/store-fcm-token", authController.storeFcmToken);
-
-
+authRouter.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), authController.callBackFunction);
 
 module.exports = authRouter;
 

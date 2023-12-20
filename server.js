@@ -55,7 +55,6 @@ io.on('connection', (socket) => {
 
     // Listen for user status change events
     socket.on('status-change', (data) => {
-        console.log('---data-----', data);
         // Broadcast the status change to all connected clients
         io.emit('userStatusChange', data);
     });
