@@ -5,30 +5,19 @@ module.exports = {
 
     async createGroup(req, resp) {
         try {
-            let file = {}
-            if (req.files) {
-                req.files.forEach(async element => {
-                    file.fileType = element.mimetype,
-                        file.fileName = element.filename,
-                        file.filePath = element.path
-                });
-            }
-            const { group_name, users } = req.body;
+            console.log(req.body);
+            const { name, participants } = req.body;
 
-            // Create group
-            // const group = await Groups.create({ group_name });
-            const group = await Groups.create(
-                {
-                    group_name: group_name,
-                    fileType: file.fileType,
-                    fileName: file.fileName,
-                    filePath: file.filePath
-                }
-            );
-            const userss = req.body.users.split(',').map(userId => parseInt(userId, 10));
+            // Create the group
+            const group = await Groups.create({
+                group_name: name,
+            });
+
+            // Convert the participants string to an array of integers
+            const users = participants.map(userId => parseInt(userId, 10));
 
             // Add users to the group
-            await Promise.all(userss.map(userId => GroupUsers.create({ group_id: group.id, user_id: userId })));
+            await Promise.all(users.map(userId => GroupUsers.create({ group_id: group.id, user_id: userId })));
 
             resp.status(200).json({ success: true, successmessage: 'Group created successfully' });
         } catch (error) {
@@ -59,14 +48,16 @@ module.exports = {
 
             await groupById.save();
 
-            // Update group users
-            const users = req.body.users.split(',').map(userId => parseInt(userId, 10));
+            if (req.body.users) {
+                // Update group users
+                const users = req.body.users.split(',').map(userId => parseInt(userId, 10));
 
-            // Delete old group users
-            await GroupUsers.destroy({ where: { group_id: groupId } });
+                // Delete old group users
+                await GroupUsers.destroy({ where: { group_id: groupId } });
 
-            // Add updated users to the group
-            await Promise.all(users.map(userId => GroupUsers.create({ group_id: groupId, user_id: userId })));
+                // Add updated users to the group
+                await Promise.all(users.map(userId => GroupUsers.create({ group_id: groupId, user_id: userId })));
+            }
 
             resp.status(200).json({ success: true, successmessage: 'Group updated successfully' });
         } catch (error) {
