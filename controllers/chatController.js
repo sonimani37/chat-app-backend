@@ -1,4 +1,5 @@
 const { Chat } = require('../models');
+const { UserImage } = require('../models');
 const { User } = require('../models');
 const { SingleChatMedia } = require('../models');
 const sendPushNotification = require('./../pushNotifications');
@@ -44,24 +45,36 @@ module.exports = {
             }
 
             // Retrieve the recipient's FCM token from the user model
-            const recipient = await User.findByPk(req.body.receiverId);
-            console.log('recipient',recipient)
+            let recipient = await User.findOne({
+                where: { id: req.body.receiverId },
+                include: [
+                    {
+                        model: UserImage,
+                        as: 'UserImages',
+                    },
+                ],
+            });
+
+            recipient = recipient?.dataValues;
+            const baseUrl = req.protocol + '://' + req.get('host') + "/";
+            const originUrl = req.get('origin') || req.get('referer') || req.get('host');
             if (recipient && recipient.fcmtoken) {
-                        const notificationPayload = {
-                            notification: {
-                                title: 'New Message',
-                                body: 'You have a new message!',
-                            },
-                            data: {
-                                // add any additional data you want to send with the notification
-                            },
-                        };
+                const notificationPayload = {
+                    notification: {
+                        title: recipient.firstname + " " + recipient.lastname,
+                        body: req.body.message,
+                        image: baseUrl + recipient.UserImages?.dataValues?.filePath + "?width=100px&height=100px",
+                        icon: originUrl +'/assets/img/favicon.png',
+                        click_action: baseUrl,
+                    },
+                    data: {
+                        // add any additional data you want to send with the notification
+                    },
+                };
                 sendPushNotification(recipient.fcmtoken, notificationPayload);
             } else {
                 console.log({ error: 'Recipient not found or missing FCM token' });
             }
-            // sendPushNotification(recipient.fcmToken,notificationPayload)
-
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
             return resp.status(500).json({ success: false, error: error.message })
