@@ -59,6 +59,46 @@ io.on('connection', (socket) => {
         io.emit('userStatusChange', data);
     });
 
+    // Handle call initiation
+    socket.on('call', async ({ callerId, receiverId }) => {
+        // Check if the receiver is available
+        console.log('callerId, receiverId',callerId, receiverId);
+        const receiverSocket = io.sockets.sockets.get(receiverId);
+
+        console.log('receiverSocket',receiverSocket);
+
+        if (receiverSocket) {
+            // Update the call status
+            await ActiveCall.create({ callerId, receiverId, status: 'pending' });
+
+            // Notify the receiver about the incoming call
+            receiverSocket.emit('incomingCall', { callerId, receiverId });
+        } else {
+            // Handle the case where the receiver is not available
+            socket.emit('callError', { message: 'User is not available.' });
+        }
+    });
+
+    // Handle call acceptance
+    socket.on('acceptCall', async ({ callerId, receiverId }) => {
+        // Update the call status to ongoing
+        await ActiveCall.update({ status: 'ongoing' }, { where: { callerId, receiverId } });
+
+        // Notify both the caller and the receiver that the call is accepted
+        io.to(callerId).emit('callAccepted', { callerId, receiverId });
+        io.to(receiverId).emit('callAccepted', { callerId, receiverId });
+    });
+
+    // Handle call termination
+    socket.on('endCall', async ({ callerId, receiverId }) => {
+        // Update the call status to ended
+        await ActiveCall.update({ status: 'ended' }, { where: { callerId, receiverId } });
+
+        // Notify both the caller and the receiver that the call has ended
+        io.to(callerId).emit('callEnded', { callerId, receiverId });
+        io.to(receiverId).emit('callEnded', { callerId, receiverId });
+    });
+
     // Example: Listen for a disconnect event
     socket.on('disconnect', () => {
         console.log('User disconnected');

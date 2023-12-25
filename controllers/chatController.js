@@ -55,26 +55,26 @@ module.exports = {
                 ],
             });
 
-            recipient = recipient?.dataValues;
-            const baseUrl = req.protocol + '://' + req.get('host') + "/";
-            const originUrl = req.get('origin') || req.get('referer') || req.get('host');
-            if (recipient && recipient.fcmtoken) {
-                const notificationPayload = {
-                    notification: {
-                        title: recipient.firstname + " " + recipient.lastname,
-                        body: req.body.message,
-                        image: baseUrl + recipient.UserImages?.dataValues?.filePath + "?width=100px&height=100px",
-                        icon: originUrl +'/assets/img/favicon.png',
-                        click_action: baseUrl,
-                    },
-                    data: {
-                        // add any additional data you want to send with the notification
-                    },
-                };
-                sendPushNotification(recipient.fcmtoken, notificationPayload);
-            } else {
-                console.log({ error: 'Recipient not found or missing FCM token' });
-            }
+            // recipient = recipient?.dataValues;
+            // const baseUrl = req.protocol + '://' + req.get('host') + "/";
+            // const originUrl = req.get('origin') || req.get('referer') || req.get('host');
+            // if (recipient && recipient.fcmtoken) {
+            //     const notificationPayload = {
+            //         notification: {
+            //             title: recipient.firstname + " " + recipient.lastname,
+            //             body: req.body.message,
+            //             image: baseUrl + recipient.UserImages?.dataValues?.filePath + "?width=100px&height=100px",
+            //             icon: originUrl +'/assets/img/favicon.png',
+            //             click_action: baseUrl,
+            //         },
+            //         data: {
+            //             // add any additional data you want to send with the notification
+            //         },
+            //     };
+            // sendPushNotification(recipient.fcmtoken, notificationPayload);
+            // } else {
+            //     console.log({ error: 'Recipient not found or missing FCM token' });
+            // }
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
             return resp.status(500).json({ success: false, error: error.message })
@@ -91,6 +91,7 @@ module.exports = {
                         { senderId: sender_id, receiverId: receiver_id },
                         { senderId: receiver_id, receiverId: sender_id },
                     ],
+                    isDeleted: null
                 },
                 include: [
                     { model: User, as: 'sender' },
@@ -104,4 +105,26 @@ module.exports = {
             return resp.status(500).json({ success: false, error: error.message })
         }
     },
+
+    async deleteChat(req, resp) {
+        try {
+            var id = req.params.id;
+            console.log('id',id);
+            chatData = await Chat.findOne({ where: { id } });
+
+            if (!chatData) {
+                return resp.status(404).json({ error: 'User not found' });
+            }
+            console.log("chatData", chatData);
+            const todayDate = new Date();
+
+            console.log(todayDate);
+
+            await chatData.update({ isDeleted: todayDate });
+
+            resp.status(200).json({ success: true, messages: chatData, });
+        } catch (error) {
+            return resp.status(500).json({ success: false, error: error.message })
+        }
+    }
 }
