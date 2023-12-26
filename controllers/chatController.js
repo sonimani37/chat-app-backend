@@ -36,7 +36,6 @@ module.exports = {
                             filePath: element.path
                         }
                     );
-
                     await Chat.update(
                         { message: singleChat.filePath },
                         { where: { id: chat.id } },

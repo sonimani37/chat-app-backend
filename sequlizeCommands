@@ -16,6 +16,10 @@ npx sequelize-cli model:generate --name tableName --attributes attributeName1:da
 
 npx sequelize-cli model:generate --name UserImage --attributes "userId:INTEGER,fileType:STRING,fileName:STRING,filePath:STRING"
 
+npx sequelize-cli model:generate --name ActiveCall --attributes "callerId:INTEGER,receiverId:INTEGER,status:STRING"
+
+
+
 
 
 npx sequelize-cli db:migrate
