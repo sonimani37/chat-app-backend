@@ -17,7 +17,7 @@ module.exports = {
         try {
             req.body.senderId = JSON.parse(req.body.senderId);
             req.body.receiverId = JSON.parse(req.body.receiverId);
-
+            console.log('req.files ====',req.files);
             var chat = await Chat.create(
                 {
                     message: req.body?.message,
@@ -36,23 +36,22 @@ module.exports = {
                             filePath: element.path
                         }
                     );
-                    await Chat.update(
-                        { message: singleChat.filePath },
-                        { where: { id: chat.id } },
-                    );
+                    if(!req.body?.message){
+                        await Chat.update( { message: singleChat.filePath }, { where: { id: chat.id } }, );
+                    }
                 });
             }
 
-            // Retrieve the recipient's FCM token from the user model
-            let recipient = await User.findOne({
-                where: { id: req.body.receiverId },
-                include: [
-                    {
-                        model: UserImage,
-                        as: 'UserImages',
-                    },
-                ],
-            });
+            // // Retrieve the recipient's FCM token from the user model
+            // let recipient = await User.findOne({
+            //     where: { id: req.body.receiverId },
+            //     include: [
+            //         {
+            //             model: UserImage,
+            //             as: 'UserImages',
+            //         },
+            //     ],
+            // });
 
             // recipient = recipient?.dataValues;
             // const baseUrl = req.protocol + '://' + req.get('host') + "/";
@@ -95,6 +94,10 @@ module.exports = {
                 include: [
                     { model: User, as: 'sender' },
                     { model: User, as: 'receiver' },
+                    {
+                        model: SingleChatMedia,
+                        association: 'ChatMedia',
+                    }
                 ],
                 order: [['createdAt', 'ASC']], // You can adjust the order as needed
             });
