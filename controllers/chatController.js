@@ -36,43 +36,12 @@ module.exports = {
                             filePath: element.path
                         }
                     );
-                    if(!req.body?.message){
-                        await Chat.update( { message: singleChat.filePath }, { where: { id: chat.id } }, );
-                    }
+                    // if(!req.body?.message){
+                    //     await Chat.update( { message: singleChat.filePath }, { where: { id: chat.id } }, );
+                    // }
                 });
             }
 
-            // // Retrieve the recipient's FCM token from the user model
-            // let recipient = await User.findOne({
-            //     where: { id: req.body.receiverId },
-            //     include: [
-            //         {
-            //             model: UserImage,
-            //             as: 'UserImages',
-            //         },
-            //     ],
-            // });
-
-            // recipient = recipient?.dataValues;
-            // const baseUrl = req.protocol + '://' + req.get('host') + "/";
-            // const originUrl = req.get('origin') || req.get('referer') || req.get('host');
-            // if (recipient && recipient.fcmtoken) {
-            //     const notificationPayload = {
-            //         notification: {
-            //             title: recipient.firstname + " " + recipient.lastname,
-            //             body: req.body.message,
-            //             image: baseUrl + recipient.UserImages?.dataValues?.filePath + "?width=100px&height=100px",
-            //             icon: originUrl +'/assets/img/favicon.png',
-            //             click_action: baseUrl,
-            //         },
-            //         data: {
-            //             // add any additional data you want to send with the notification
-            //         },
-            //     };
-            // sendPushNotification(recipient.fcmtoken, notificationPayload);
-            // } else {
-            //     console.log({ error: 'Recipient not found or missing FCM token' });
-            // }
             return resp.status(200).json({ success: true, successmessage: 'send message successfully' });
         } catch (error) {
             return resp.status(500).json({ success: false, error: error.message })
