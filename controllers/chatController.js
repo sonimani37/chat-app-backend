@@ -17,7 +17,7 @@ module.exports = {
         try {
             req.body.senderId = JSON.parse(req.body.senderId);
             req.body.receiverId = JSON.parse(req.body.receiverId);
-            console.log('req.files ====',req.files);
+            console.log('req.files ====', req.files);
             var chat = await Chat.create(
                 {
                     message: req.body?.message,
@@ -80,22 +80,36 @@ module.exports = {
     async deleteChat(req, resp) {
         try {
             var id = req.params.id;
-            console.log('id',id);
+            console.log('id', id);
             chatData = await Chat.findOne({ where: { id } });
-
             if (!chatData) {
                 return resp.status(404).json({ error: 'User not found' });
             }
-            console.log("chatData", chatData);
             const todayDate = new Date();
-
-            console.log(todayDate);
-
             await chatData.update({ isDeleted: todayDate });
-
             resp.status(200).json({ success: true, messages: chatData, });
         } catch (error) {
             return resp.status(500).json({ success: false, error: error.message })
         }
+    },
+
+    async startCall(req, res) {
+        try {
+            // Logic to start a call and save it to the database
+            // Handle signaling and set up WebRTC connection on the server side
+        } catch (error) {
+            console.error('Error starting call:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+      
+    async endCall(req, res) {
+        try {
+            // Logic to end a call and update the database
+            // Close the WebRTC connection on the server side
+        } catch (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
+      
 }

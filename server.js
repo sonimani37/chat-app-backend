@@ -2,8 +2,6 @@ const http = require('http'); // Import the http module
 const express = require('express');
 const socketIo = require('socket.io');
 
-const SimplePeer = require('simple-peer');
-
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -12,6 +10,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const routes = require('./routes/index-route');
+const twilio = require('twilio');
+
 
 const app = express();
 
@@ -25,6 +25,10 @@ app.use("/uploads", express.static("./uploads"));
 
 
 const { ActiveCall } = require('./models');
+// Twilio setup
+const twilioClient = twilio('AC6c1df99f6f6c1b6d3b04f49452283d86', 'd2573efddf7905694d91e7448faa0367');
+
+
 
 const io = socketIo(server, {
     cors: {
@@ -70,6 +74,11 @@ io.on('connection', (socket) => {
         socket.join(userId);
     });
 
+    socket.on('send-message', (data) => {
+        console.log(data);
+        io.emit('message', data);
+    });
+
     socket.on('callUser', (data) => {
         console.log(data);
         io.to(data.to).emit('incomingCalls', { signal: data.signalData, from: data.from });
@@ -92,7 +101,7 @@ io.on('connection', (socket) => {
         // const receiverSocket = io.sockets.sockets.get(receiverId);
         const receiverSocket = getReceiverSocket(receiverId);
 
-        // console.log('receiverSocket', receiverSocket);
+        console.log('receiverSocket', receiverSocket);
 
         if (receiverSocket) {
             console.log('-----call--4-------- callerId, receiverId', callerId, receiverId);
@@ -149,10 +158,10 @@ io.on('connection', (socket) => {
         // Update the call status to ongoing
         await ActiveCall.update({ status: 'ongoing' }, { where: { callerId, receiverId } });
 
-        // // Notify both the caller and the receiver that the call is accepted
-        io.to(callerId).emit('callAccepted', { callerId, receiverId });
-        io.to(receiverId).emit('callAccepted', { callerId, receiverId });
-        // io.emit('callAccepted', { callerId, receiverId });
+        // // // Notify both the caller and the receiver that the call is accepted
+        // io.to(callerId).emit('callAccepted', { callerId, receiverId });
+        // io.to(receiverId).emit('callAccepted', { callerId, receiverId });
+        io.emit('callAccepted', { callerId, receiverId });
     });
 
     // Handle call termination
@@ -163,8 +172,8 @@ io.on('connection', (socket) => {
 
         // // Notify both the caller and the receiver that the call has ended
         // io.to(callerId).emit('callEnded', { callerId, receiverId });
-        io.to(receiverId).emit('callEnded', { callerId, receiverId });
-        // io.emit('callEnded', { callerId, receiverId });
+        // io.to(receiverId).emit('callEnded', { callerId, receiverId });
+        io.emit('callEnded', { callerId, receiverId });
     });
 
     // Example: Listen for a disconnect event

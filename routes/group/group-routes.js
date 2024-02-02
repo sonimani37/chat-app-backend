@@ -16,5 +16,7 @@ groupRoutes.post("/send-message",helper.upload.any(),groupController.sendMessage
 
 groupRoutes.post("/get-messages", groupController.getGroupMessages);
 
+groupRoutes.delete("/delete-message/:id", groupController.deleteChat);
+
 
 module.exports = groupRoutes;

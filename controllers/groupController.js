@@ -157,4 +157,27 @@ module.exports = {
         }
     },
 
+    async deleteChat(req, resp) {
+        try {
+            var id = req.params.id;
+            console.log('id', id);
+
+            var groupChatData = await GroupChat.findOne({ where: { id } });
+
+            if (!groupChatData) {
+                return resp.status(404).json({ error: 'groupChat not found' });
+            }
+            console.log("groupChatData", groupChatData);
+            const todayDate = new Date();
+            console.log(todayDate);
+
+           let result =  await groupChatData.update({ isDeleted: todayDate });
+            console.log(result);
+            
+            resp.status(200).json({ success: true, messages: groupChatData, });
+        } catch (error) {
+            return resp.status(500).json({ success: false, error: error.message })
+        }
+    },
+
 }

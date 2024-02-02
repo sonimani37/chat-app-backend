@@ -14,10 +14,14 @@ npx sequelize-cli db:migrate
 
 npx sequelize-cli model:generate --name tableName --attributes attributeName1:dataType,attributeName2:dataType
 
+
+npx sequelize-cli model:generate --name Users --attributes "firstname:STRING,lastname:STRING,contact:STRING,email:STRING,password:STRING,createdAt:DATE,updatedAt:DATE"
+
+npx sequelize-cli model:generate --name Users --attributes "firstname:STRING,lastname:STRING,contact:STRING,email:STRING,password:STRING"
+
 npx sequelize-cli model:generate --name UserImage --attributes "userId:INTEGER,fileType:STRING,fileName:STRING,filePath:STRING"
 
 npx sequelize-cli model:generate --name ActiveCall --attributes "callerId:INTEGER,receiverId:INTEGER,status:STRING"
-
 
 
 

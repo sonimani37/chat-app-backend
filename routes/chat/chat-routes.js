@@ -12,6 +12,8 @@ chatRoutes.post("/get-messages", chatController.getMessages);
 
 chatRoutes.delete("/delete-message/:id", chatController.deleteChat);
 
+chatRoutes.post('/start-call', chatController.startCall);
 
+chatRoutes.post('/end-call', chatController.endCall);
 
 module.exports = chatRoutes;
