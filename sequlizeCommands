@@ -1,19 +1,33 @@
+testalw01@gmail.com
+alw@test
+
+(
+  1. first create mmigration & model
+  2. modify the migration and model
+  2.1. Add references into the migration
+  2.2 Add Association into the model
+  2.3 run the migrate command
+)
+
 npm init -y
 
 npm install --save-dev sequelize-cli
-
 npx sequelize-cli init
+
+npm install sequelize
+sequelize init
+
 
 npm i mysql2
 
+# drop and recreate the database, table also insert data
+npx sequelize-cli db:drop
 npx sequelize-cli db:create
-
-npx sequelize-cli db:drop    // if you wants to drop the database
-
 npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
+
 
 npx sequelize-cli model:generate --name tableName --attributes attributeName1:dataType,attributeName2:dataType
-
 
 npx sequelize-cli model:generate --name Users --attributes "firstname:STRING,lastname:STRING,contact:STRING,email:STRING,password:STRING,createdAt:DATE,updatedAt:DATE"
 
@@ -23,10 +37,13 @@ npx sequelize-cli model:generate --name UserImage --attributes "userId:INTEGER,f
 
 npx sequelize-cli model:generate --name ActiveCall --attributes "callerId:INTEGER,receiverId:INTEGER,status:STRING"
 
+sequelize model:generate --name ContactUsConfigsImage --attributes contactImage:string,productId:integer
 
-
-
+migrate to particular table:
 npx sequelize-cli db:migrate
+sequelize db:migrate --to 20240415100217-create-news.js
+
+
 
 npx sequelize-cli seed:generate --name demo-user    ///insert data into the table
 
@@ -34,13 +51,14 @@ npx sequelize-cli db:seed:all
 
 npx sequelize-cli db:seed: --seed fileName(add countries) (particualr data insert)
 
+npx sequelize-cli db:seed --seed 20221018124946-user
+npx sequelize-cli db:seed --seed 20240319051711-permissions
 
 
-# drop and recreate the database, table also insert data
-npx sequelize-cli db:drop
-npx sequelize-cli db:create
-npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
+
+
+
+
 
 
 
@@ -69,5 +87,3 @@ sequelize-cli db:migrate                        Run pending migrations
   sequelize-cli seed:create                       Generates a new seed file
 
 
-
-  ds
